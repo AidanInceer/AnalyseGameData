@@ -33,5 +33,7 @@ def analyse_game_data(event, context):
     print(f"headers: {data['headers']}.")
     print(f"username: {data['username']}.")
 
-    for num, move in board.mainline_moves():
+    for num, move in enumerate(chess_game.mainline_moves()):
         print(f"{num}: {move}")
+
+    return 0
