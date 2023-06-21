@@ -1,6 +1,11 @@
 import json
-import requests
 from google.cloud import storage
+import chess
+import chessdotcom
+from io import StringIO
+import chess.engine
+import chess.pgn
+
 
 def analyse_game_data(event, context):
     """Triggered by a change to a Cloud Storage bucket.
@@ -12,7 +17,7 @@ def analyse_game_data(event, context):
     blob_name = event["name"]
     print(bucket_name)
     print(blob_name)
-    
+
     storage_client = storage.Client()
 
     bucket = storage_client.bucket(bucket_name)
@@ -21,8 +26,14 @@ def analyse_game_data(event, context):
 
     data = json.loads(contents.decode("utf-8"))
 
-    print(f"=============================================================")
-    print(f"username: {data['username']}.")
-    print(f"game_num: {data['game_num']}.")
-    print(f"pgn: {data['pgn']}.")
+    game_pgn = StringIO(data["pgn"])
+    chess_game = chess.pgn.read_game(game_pgn)
+    board = chess_game.board()
+
     print(f"headers: {data['headers']}.")
+    print(f"username: {data['username']}.")
+
+    for num, move in enumerate(chess_game.mainline_moves()):
+        print(f"{num}: {move}")
+
+    return 0
