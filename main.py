@@ -32,7 +32,7 @@ def analyse_game_data(event, context):
     board = chess_game.board()
 
     engine = chess.engine.SimpleEngine.popen_uci(
-        "#!/lib/stkfsh_15/stk_15.exe"
+        r"/lib/stkfsh_15/stk_15.exe"
     )
     depth = 8
 
