@@ -1,10 +1,11 @@
 import json
 from google.cloud import storage
 import chess
-import chessdotcom
 from io import StringIO
 import chess.engine
 import chess.pgn
+import pandas as pd
+from src.move import mainline_move, best_move, eval_delta, move_accuracy, assign_move_type, create_engine
 
 
 def analyse_game_data(event, context):
@@ -30,10 +31,45 @@ def analyse_game_data(event, context):
     chess_game = chess.pgn.read_game(game_pgn)
     board = chess_game.board()
 
+    engine = create_engine()
+    depth = 8
+
     print(f"headers: {data['headers']}.")
     print(f"username: {data['username']}.")
 
+    move_data = []
     for num, move in enumerate(chess_game.mainline_moves()):
-        print(f"{num}: {move}")
+        str_bm, eval_bm = best_move(
+            board,
+            engine,
+            depth
+        )
+        str_ml, eval_ml = mainline_move(
+            move,
+            board,
+            engine,
+            depth
+        )
+        evaldiff = eval_delta(
+            num, eval_bm, eval_ml
+        )
+        move_acc = move_accuracy(evaldiff)
+        move_type = assign_move_type(move_acc)
+
+        move_dict = {
+            "move_num":num,
+            "str_ml":str_ml,
+            "eval_ml":eval_ml,
+            "str_bm":str_bm,
+            "eval_bm":eval_bm,
+            "evaldiff":evaldiff,
+            "move_acc":move_acc,
+            "move_type":move_type,
+        }
+        move_data.append(move_dict)
+
+    df = pd.DataFrame(move_data)
+    
+    print(df)
 
     return 0
