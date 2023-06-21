@@ -31,7 +31,9 @@ def analyse_game_data(event, context):
     chess_game = chess.pgn.read_game(game_pgn)
     board = chess_game.board()
 
-    engine = create_engine()
+    engine = chess.engine.SimpleEngine.popen_uci(
+        "./lib/stkfsh_15/stk_15.exe"
+    )
     depth = 8
 
     print(f"headers: {data['headers']}.")
