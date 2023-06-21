@@ -5,7 +5,7 @@ from io import StringIO
 import chess.engine
 import chess.pgn
 import pandas as pd
-from src.move import mainline_move, best_move, eval_delta, move_accuracy, assign_move_type, create_engine
+from src.move import mainline_move, best_move, eval_delta, move_accuracy, assign_move_type
 
 
 def analyse_game_data(event, context):

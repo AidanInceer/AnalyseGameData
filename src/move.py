@@ -1,10 +1,8 @@
-from typing import Union
 import math
 
 import chess
 import chess.engine
 import chess.pgn
-import pandas as pd
 from chess import Board
 
 def mainline_move(
