@@ -15,7 +15,7 @@ def create_engine() -> chess.engine.SimpleEngine:
         chess.engine.SimpleEngine: Chess engine to enable analysis of games.
     """
     engine = chess.engine.SimpleEngine.popen_uci(
-        f".\lib\stkfsh_15\stk_15.exe"
+        f"../lib/stkfsh_15/stk_15.exe"
     )
     return engine
 
