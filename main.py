@@ -1,6 +1,7 @@
 import json
 from google.cloud import storage
 import chess
+import os
 from io import StringIO
 import chess.engine
 import chess.pgn
@@ -32,7 +33,7 @@ def analyse_game_data(event, context):
     board = chess_game.board()
 
     engine = chess.engine.SimpleEngine.popen_uci(
-        r"/lib/stkfsh_15/stk_15.exe"
+        f"{os.getcwd()}/lib/stkfsh_15/stk_15.exe"
     )
     depth = 8
 
