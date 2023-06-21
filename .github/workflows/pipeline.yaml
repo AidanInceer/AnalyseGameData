@@ -82,33 +82,36 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-  # Deploy:
-  #   needs: Scan
-  #   if: github.ref == 'refs/heads/master'
-  #   runs-on: ubuntu-latest
+  Deploy:
+    needs: Scan
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
 
-  #   permissions:
-  #     contents: read
-  #     id-token: write
+    permissions:
+      contents: read
+      id-token: write
 
-  #   steps:
-  #   - uses: 'actions/checkout@v3'
+    steps:
+    - uses: 'actions/checkout@v3'
 
-  #   - id: Authenticate-GCP
-  #     uses: 'google-github-actions/auth@v1'
-  #     with:
-  #       credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+    - id: Authenticate-GCP
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
 
-  #   - id: Deploy-GCP
-  #     uses: google-github-actions/deploy-cloud-functions@main
-  #     with:
-  #       name: extract_game_data
-  #       region: europe-west2
-  #       runtime: python39
-  #       memory_mb: 256
-  #       project_id:  ${{env.PROJECT}}
-  #       entry_point: extract_game_data
-  #       timeout: 300
-  #       min_instances: 0
-  #       max_instances: 1
-
+    - id: Deploy-GCP
+      uses: google-github-actions/deploy-cloud-functions@main
+      with:
+        name: analyse_game_data
+        region: europe-west2
+        runtime: python39
+        memory_mb: 512
+        project_id:  ${{env.PROJECT}}
+        entry_point: analyse_game_data
+        timeout: 300
+        min_instances: 0
+        max_instances: 100
+        event_trigger_type: google.storage.object.finalize
+        event_trigger_resource: projects/${{env.PROJECT}}/buckets/chess-json-data
+        event_trigger_service: storage.googleapis.com
+  
