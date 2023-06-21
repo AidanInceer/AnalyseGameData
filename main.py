@@ -37,3 +37,6 @@ def analyse_game_data(event, context):
         print(f"{num}: {move}")
 
     return 0
+
+
+# test
