@@ -7,18 +7,6 @@ import chess.pgn
 import pandas as pd
 from chess import Board
 
-
-def create_engine() -> chess.engine.SimpleEngine:
-    """Initializes the chess engine.
-
-    Returns:
-        chess.engine.SimpleEngine: Chess engine to enable analysis of games.
-    """
-    engine = chess.engine.SimpleEngine.popen_uci(
-        f"../lib/stkfsh_15/stk_15.exe"
-    )
-    return engine
-
 def mainline_move(
         move: chess.Move,
         board: Board,
