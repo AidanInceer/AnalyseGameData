@@ -41,11 +41,11 @@ def analyse_game_data(event, context):
     job_config = bigquery.LoadJobConfig()
 
     job = bq_client.load_table_from_dataframe(
-        df, "chess_data_table", job_config=job_config
+        df, "united-axle-390115.chess_data.test_table", job_config=job_config
     )
     job.result()
 
-    table = bq_client.get_table("chess_data_table")
+    table = bq_client.get_table("united-axle-390115.chess_data.test_table")
     print(
-        f"Loaded {table.num_rows} rows and {len(table.schema)} columns to chess_data_table"
+        f"Loaded {table.num_rows} rows and {len(table.schema)} columns to 'united-axle-390115.chess_data.test_table'"
     )
