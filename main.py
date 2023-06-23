@@ -34,7 +34,7 @@ def analyse_game_data(event, context):
     }
 
     bq_dict = {**data["headers"], **dict_base}
-    df = pd.DataFrame(bq_dict)
+    df = pd.DataFrame([bq_dict,bq_dict,bq_dict,bq_dict])
     print(df)
 
     bq_client = bigquery.Client()
