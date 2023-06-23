@@ -28,17 +28,14 @@ def analyse_game_data(event, context):
 
     data = json.loads(contents.decode("utf-8"))
 
-    game_pgn = StringIO(data["pgn"])
-    chess_game = chess.pgn.read_game(game_pgn)
-
     dict_base = {
         "username": data["username"],
-        "total_moves": len(chess_game.mainline_moves()),
-        "moves_list": list(chess_game.mainline_moves()),
+        "pgn": data["pgn"],
     }
 
     bq_dict = {**data["headers"], **dict_base}
     df = pd.DataFrame(bq_dict)
+    print(df)
 
     bq_client = bigquery.Client()
     job_config = bigquery.LoadJobConfig()
