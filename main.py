@@ -34,7 +34,7 @@ def analyse_game_data(event, context):
     board = chess_game.board()
 
     engine = chess.engine.SimpleEngine.popen_uci(
-        ".\lib\stockfish_15.1_linux.x64\stockfish-ubuntu-20.04-x86-64"
+        f"{os.getcwd()}\lib\stockfish_15.1_linux.x64\stockfish-ubuntu-20.04-x86-64"
     )
     depth = 8
 
