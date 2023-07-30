@@ -9,7 +9,6 @@ logs/*
 *.pbix
 venv/
 *.env
-lib/*
 *.properties
 
 
