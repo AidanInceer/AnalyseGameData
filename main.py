@@ -1,13 +1,15 @@
 import json
-from google.cloud import storage
-import chess
 import os
 from io import StringIO
+
+import chess
 import chess.engine
 import chess.pgn
 import pandas as pd
-from src.move import best_move, mainline_move, eval_delta, move_accuracy, move_eval, assign_move_type
-from google.cloud import bigquery
+from google.cloud import bigquery, storage
+
+from src.move import (assign_move_type, best_move, eval_delta, mainline_move,
+                      move_accuracy)
 
 
 def analyse_game_data(event, context):
@@ -18,8 +20,6 @@ def analyse_game_data(event, context):
     """
     bucket_name = event["bucket"]
     blob_name = event["name"]
-    print(bucket_name)
-    print(blob_name)
 
     storage_client = storage.Client()
 
