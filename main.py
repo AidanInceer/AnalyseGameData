@@ -1,13 +1,15 @@
 import json
-from google.cloud import storage
-import chess
 import os
 from io import StringIO
+
+import chess
 import chess.engine
 import chess.pgn
 import pandas as pd
-from src.move import best_move, mainline_move, eval_delta, move_accuracy, move_eval, assign_move_type
-from google.cloud import bigquery
+from google.cloud import bigquery, storage
+
+from src.move import (assign_move_type, best_move, eval_delta, mainline_move,
+                      move_accuracy)
 
 
 def analyse_game_data(event, context):
@@ -18,8 +20,6 @@ def analyse_game_data(event, context):
     """
     bucket_name = event["bucket"]
     blob_name = event["name"]
-    print(bucket_name)
-    print(blob_name)
 
     storage_client = storage.Client()
 
@@ -34,12 +34,9 @@ def analyse_game_data(event, context):
     board = chess_game.board()
 
     engine = chess.engine.SimpleEngine.popen_uci(
-        f"{os.getcwd()}\lib\stockfish_15.1_linux.x64\stockfish-ubuntu-20.04-x86-64"
+        r"./lib/stk15_lin/stockfish-ubuntu-20.04-x86-64"
     )
     depth = 8
-
-    print(f"headers: {data['headers']}.")
-    print(f"username: {data['username']}.")
 
     move_data = []
     for num, move in enumerate(chess_game.mainline_moves()):
@@ -61,27 +58,24 @@ def analyse_game_data(event, context):
         move_type = assign_move_type(move_acc)
 
         move_dict = {
-            "move_num":num,
-            "str_ml":str_ml,
-            "eval_ml":eval_ml,
-            "str_bm":str_bm,
-            "eval_bm":eval_bm,
-            "evaldiff":evaldiff,
-            "move_acc":move_acc,
-            "move_type":move_type,
+            "move_num": num,
+            "str_ml": str_ml,
+            "eval_ml": eval_ml,
+            "str_bm": str_bm,
+            "eval_bm": eval_bm,
+            "evaldiff": evaldiff,
+            "move_acc": move_acc,
+            "move_type": move_type,
         }
-        move_data.append(move_dict)
+        base_dict = {
+            "username": data["username"],
+            "pgn": data["pgn"],
+        }
+        game_dict = {**data["headers"], **base_dict, **move_dict}
+
+        move_data.append(game_dict)
 
     df = pd.DataFrame(move_data)
-
-    # dict_base = {
-    #     "username": data["username"],
-    #     "pgn": data["pgn"],
-    # }
-
-    # bq_dict = {**data["headers"], **dict_base}
-    # df = pd.DataFrame([bq_dict,bq_dict,bq_dict,bq_dict])
-    # print(df)
 
     bq_client = bigquery.Client()
     job_config = bigquery.LoadJobConfig()
@@ -93,5 +87,6 @@ def analyse_game_data(event, context):
 
     table = bq_client.get_table("united-axle-390115.chess_data.test_table_2")
     print(
-        f"Loaded {table.num_rows} rows and {len(table.schema)} columns to 'united-axle-390115.chess_data.test_table_2'"
+        f"Loaded {table.num_rows} rows and {len(table.schema)}"
+        "columns to 'united-axle-390115.chess_data.test_table_2'"
     )
