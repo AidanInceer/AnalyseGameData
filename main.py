@@ -34,12 +34,9 @@ def analyse_game_data(event, context):
     board = chess_game.board()
 
     engine = chess.engine.SimpleEngine.popen_uci(
-        f"{os.getcwd()}\lib\stockfish_15.1_linux.x64\stockfish-ubuntu-20.04-x86-64"
+        r"./stk15_lin/stockfish-ubuntu-20.04-x86-64"
     )
     depth = 8
-
-    print(f"headers: {data['headers']}.")
-    print(f"username: {data['username']}.")
 
     move_data = []
     for num, move in enumerate(chess_game.mainline_moves()):
@@ -61,27 +58,25 @@ def analyse_game_data(event, context):
         move_type = assign_move_type(move_acc)
 
         move_dict = {
-            "move_num":num,
-            "str_ml":str_ml,
-            "eval_ml":eval_ml,
-            "str_bm":str_bm,
-            "eval_bm":eval_bm,
-            "evaldiff":evaldiff,
-            "move_acc":move_acc,
-            "move_type":move_type,
+            "move_num": num,
+            "str_ml": str_ml,
+            "eval_ml": eval_ml,
+            "str_bm": str_bm,
+            "eval_bm": eval_bm,
+            "evaldiff": evaldiff,
+            "move_acc": move_acc,
+            "move_type": move_type,
         }
         move_data.append(move_dict)
 
     df = pd.DataFrame(move_data)
 
-    # dict_base = {
-    #     "username": data["username"],
-    #     "pgn": data["pgn"],
-    # }
+    dict_base = {
+        "username": data["username"],
+        "pgn": data["pgn"],
+    }
 
-    # bq_dict = {**data["headers"], **dict_base}
-    # df = pd.DataFrame([bq_dict,bq_dict,bq_dict,bq_dict])
-    # print(df)
+    bq_dict = {**data["headers"], **dict_base}
 
     bq_client = bigquery.Client()
     job_config = bigquery.LoadJobConfig()
