@@ -34,7 +34,7 @@ def analyse_game_data(event, context):
     board = chess_game.board()
 
     engine = chess.engine.SimpleEngine.popen_uci(
-        r"./stk15_lin/stockfish-ubuntu-20.04-x86-64"
+        r"./lib/stk15_lin/stockfish-ubuntu-20.04-x86-64"
     )
     depth = 8
 
@@ -67,16 +67,15 @@ def analyse_game_data(event, context):
             "move_acc": move_acc,
             "move_type": move_type,
         }
-        move_data.append(move_dict)
+        base_dict = {
+            "username": data["username"],
+            "pgn": data["pgn"],
+        }
+        game_dict = {**data["headers"], **base_dict, **move_dict}
+
+        move_data.append(game_dict)
 
     df = pd.DataFrame(move_data)
-
-    dict_base = {
-        "username": data["username"],
-        "pgn": data["pgn"],
-    }
-
-    bq_dict = {**data["headers"], **dict_base}
 
     bq_client = bigquery.Client()
     job_config = bigquery.LoadJobConfig()
@@ -88,5 +87,6 @@ def analyse_game_data(event, context):
 
     table = bq_client.get_table("united-axle-390115.chess_data.test_table_2")
     print(
-        f"Loaded {table.num_rows} rows and {len(table.schema)} columns to 'united-axle-390115.chess_data.test_table_2'"
+        f"Loaded {table.num_rows} rows and {len(table.schema)}"
+        "columns to 'united-axle-390115.chess_data.test_table_2'"
     )
