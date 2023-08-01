@@ -17,8 +17,6 @@ COPY src /app/src
 
 COPY tests /app/tests
 
-COPY temp.pgn /app
-
 # Copy the all files into the container
 COPY main.py /app
 
