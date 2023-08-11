@@ -14,7 +14,7 @@ on:
       - develop
 
 jobs:
-  Build:
+  Validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,7 +40,7 @@ jobs:
       run: python -m pytest
 
   Deploy:
-    needs: Build
+    needs: Validate
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
@@ -56,19 +56,12 @@ jobs:
       with:
         credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
 
-    - id: Deploy-GCP
-      uses: google-github-actions/deploy-cloud-functions@main
+    - id: Deploy-Cloud-Run
+      uses: 'google-github-actions/deploy-cloudrun@v1'
       with:
-        name: analyse_game_data
-        region: europe-west2
-        runtime: python39
-        memory_mb: 512
-        project_id:  ${{env.PROJECT}}
-        entry_point: analyse_game_data
-        timeout: 300
-        min_instances: 0
-        max_instances: 100
-        event_trigger_type: google.storage.object.finalize
-        event_trigger_resource: projects/${{env.PROJECT}}/buckets/chess-json-data
-        event_trigger_service: storage.googleapis.com
+        service: 'hello-cloud-run'
+        image: 'gcr.io/cloudrun/hello'
+
+    - name: 'Use output'
+      run: 'curl "${{ steps.deploy.outputs.url }}"'
   
