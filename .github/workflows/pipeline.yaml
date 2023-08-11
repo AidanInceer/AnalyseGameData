@@ -61,7 +61,4 @@ jobs:
       with:
         service: 'hello-cloud-run'
         image: 'gcr.io/cloudrun/hello'
-
-    - name: 'Use output'
-      run: 'curl "${{ steps.deploy.outputs.url }}"'
   
