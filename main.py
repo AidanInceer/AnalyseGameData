@@ -7,20 +7,22 @@ import chess.pgn
 import pandas as pd
 from google.cloud import bigquery, storage
 
-from src.move import (assign_move_type, best_move, eval_delta, mainline_move,
-                      move_accuracy)
+from src.move import (
+    assign_move_type,
+    best_move,
+    eval_delta,
+    mainline_move,
+    move_accuracy,
+)
 
 
 def analyse_game_data(event, context):
-    """Triggered by a change to a Cloud Storage bucket.
-    Args:
-         event (dict): Event payload.
-         context (google.cloud.functions.Context): Metadata for the event.
-    """
+    # TODO change to be specific for a cloud run application which recieves a pubsub
+
     bucket_name = event["bucket"]
     blob_name = event["name"]
 
-    storage_client = storage.Client()
+    storage_client = storage.Client
 
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
@@ -39,20 +41,9 @@ def analyse_game_data(event, context):
 
     move_data = []
     for num, move in enumerate(chess_game.mainline_moves()):
-        str_bm, eval_bm = best_move(
-            board,
-            engine,
-            depth
-        )
-        str_ml, eval_ml = mainline_move(
-            move,
-            board,
-            engine,
-            depth
-        )
-        evaldiff = eval_delta(
-            num, eval_bm, eval_ml
-        )
+        str_bm, eval_bm = best_move(board, engine, depth)
+        str_ml, eval_ml = mainline_move(move, board, engine, depth)
+        evaldiff = eval_delta(num, eval_bm, eval_ml)
         move_acc = move_accuracy(evaldiff)
         move_type = assign_move_type(move_acc)
 
