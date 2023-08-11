@@ -6,7 +6,8 @@ import chess
 import chess.engine
 import chess.pgn
 import pandas as pd
-from flask import Flask, request
+from flask import Flask
+
 from google.cloud import bigquery, storage
 
 from src.move import (
