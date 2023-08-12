@@ -1,6 +1,6 @@
 import base64
 import json
-import os
+from datetime import datetime
 from io import StringIO
 
 import chess
@@ -8,6 +8,7 @@ import chess.engine
 import chess.pgn
 import pandas as pd
 from flask import Flask, request
+from google.cloud import bigquery
 
 from src.move import (
     assign_move_type,
@@ -16,9 +17,6 @@ from src.move import (
     mainline_move,
     move_accuracy,
 )
-
-# from google.cloud import bigquery
-
 
 app = Flask(__name__)
 
@@ -39,16 +37,18 @@ def index():
     pubsub_message = envelope["message"]
     data = json.loads((base64.b64decode(pubsub_message["data"]).decode("utf-8")))
 
+    start_time = datetime.now().strftime("%H:%M:%S")
+
     game_pgn = StringIO(data["pgn"])
     chess_game = chess.pgn.read_game(game_pgn)
     board = chess_game.board()
 
-    print(os.getcwd())
+    print()
 
     engine = chess.engine.SimpleEngine.popen_uci(
         r"./lib/stk15_lin/stockfish-ubuntu-20.04-x86-64"
     )
-    depth = 5
+    depth = 20
 
     move_data = []
     for num, move in enumerate(chess_game.mainline_moves()):
@@ -77,22 +77,24 @@ def index():
         move_data.append(game_dict)
 
     df = pd.DataFrame(move_data)
-    print(df)
+
+    end_time = datetime.now().strftime("%H:%M:%S")
+    runtime = end_time - start_time
+    print(f"Analysis successful - runtime = [{runtime}] ")
+
+    # Upload to BQ
+    bq_client = bigquery.Client()
+    job_config = bigquery.LoadJobConfig()
+
+    job = bq_client.load_table_from_dataframe(
+        df, "united-axle-390115.chess_data.test_table_3", job_config=job_config
+    )
+    job.result()
+
+    table = bq_client.get_table("united-axle-390115.chess_data.test_table_3")
+    print(
+        f"Loaded {table.num_rows} rows and {len(table.schema)}"
+        "columns to 'united-axle-390115.chess_data.test_table_3'"
+    )
 
     return ("", 204)
-
-    # data = {"pgn": "A"}
-
-    # bq_client = bigquery.Client()
-    # job_config = bigquery.LoadJobConfig()
-
-    # job = bq_client.load_table_from_dataframe(
-    #     df, "united-axle-390115.chess_data.test_table_3", job_config=job_config
-    # )
-    # job.result()
-
-    # table = bq_client.get_table("united-axle-390115.chess_data.test_table_3")
-    # print(
-    #     f"Loaded {table.num_rows} rows and {len(table.schema)}"
-    #     "columns to 'united-axle-390115.chess_data.test_table_3'"
-    # )
