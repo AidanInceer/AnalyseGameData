@@ -1,6 +1,3 @@
-# import base64
-import base64
-import json
 from io import StringIO
 
 import chess
@@ -8,7 +5,7 @@ import chess.engine
 import chess.pgn
 import pandas as pd
 from flask import Flask, request
-from google.cloud import bigquery, storage
+from google.cloud import bigquery
 
 from src.move import (
     assign_move_type,
@@ -17,54 +14,34 @@ from src.move import (
     mainline_move,
     move_accuracy,
 )
+from src.utils.handlers import handle_request
 
 app = Flask(__name__)
 
 
-# @app.route("/")
-# def index():
-#     return "Hello World"
-
-
 @app.route("/", methods=["POST"])
 def index():
-    """Receive and parse Pub/Sub messages."""
-    envelope = request.get_json()
-    if not envelope:
+    pubsub_message = request.get_json()
+    if not pubsub_message:
         msg = "no Pub/Sub message received"
         print(f"error: {msg}")
         return f"Bad Request: {msg}", 400
 
-    if not isinstance(envelope, dict) or "message" not in envelope:
+    if not isinstance(pubsub_message, dict) or "message" not in pubsub_message:
         msg = "invalid Pub/Sub message format"
         print(f"error: {msg}")
         return f"Bad Request: {msg}", 400
 
-    pubsub_message = envelope["message"]
+    pubsub_data = handle_request(request=pubsub_message)
 
-    name = "World"
-    if isinstance(pubsub_message, dict) and "data" in pubsub_message:
-        name = base64.b64decode(pubsub_message["data"]).decode("utf-8").strip()
-
-    print(f"Hello {name}!")
+    for k, v in pubsub_data.items():
+        print(f"{k}: {v}")
 
     return ("", 204)
 
 
-def analyse_game_data(event, context):
-    # TODO change to be specific for a cloud run application which recieves a pubsub
-
-    bucket_name = event["bucket"]
-    blob_name = event["name"]
-
-    storage_client = storage.Client
-
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(blob_name)
-    contents = blob.download_as_string()
-
-    data = json.loads(contents.decode("utf-8"))
-
+def analyse_game_data():
+    data = {"pgn": "A"}
     game_pgn = StringIO(data["pgn"])
     chess_game = chess.pgn.read_game(game_pgn)
     board = chess_game.board()
@@ -106,12 +83,12 @@ def analyse_game_data(event, context):
     job_config = bigquery.LoadJobConfig()
 
     job = bq_client.load_table_from_dataframe(
-        df, "united-axle-390115.chess_data.test_table_2", job_config=job_config
+        df, "united-axle-390115.chess_data.test_table_3", job_config=job_config
     )
     job.result()
 
-    table = bq_client.get_table("united-axle-390115.chess_data.test_table_2")
+    table = bq_client.get_table("united-axle-390115.chess_data.test_table_3")
     print(
         f"Loaded {table.num_rows} rows and {len(table.schema)}"
-        "columns to 'united-axle-390115.chess_data.test_table_2'"
+        "columns to 'united-axle-390115.chess_data.test_table_3'"
     )
