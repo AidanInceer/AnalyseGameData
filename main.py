@@ -1,4 +1,5 @@
 import base64
+import json
 from io import StringIO
 
 import chess
@@ -33,7 +34,7 @@ def index():
         return f"Bad Request: {msg}", 400
 
     pubsub_message = envelope["message"]
-    data = base64.b64decode(pubsub_message["data"]).decode("utf-8")
+    data = json.loads((base64.b64decode(pubsub_message["data"]).decode("utf-8")))
 
     print(type(data))
     print(f"{data}")
