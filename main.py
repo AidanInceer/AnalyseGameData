@@ -37,7 +37,7 @@ def index():
     pubsub_message = envelope["message"]
     data = json.loads((base64.b64decode(pubsub_message["data"]).decode("utf-8")))
 
-    start_time = datetime.now().strftime("%H:%M:%S")
+    start_time = datetime.now()
 
     game_pgn = StringIO(data["pgn"])
     chess_game = chess.pgn.read_game(game_pgn)
@@ -78,7 +78,7 @@ def index():
 
     df = pd.DataFrame(move_data)
 
-    end_time = datetime.now().strftime("%H:%M:%S")
+    end_time = datetime.now()
     runtime = end_time - start_time
     print(f"Analysis successful - runtime = [{runtime}] ")
 
