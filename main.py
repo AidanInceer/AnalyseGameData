@@ -48,7 +48,7 @@ def index():
     engine = chess.engine.SimpleEngine.popen_uci(
         r"./lib/stk15_lin/stockfish-ubuntu-20.04-x86-64"
     )
-    depth = 16
+    depth = data["depth"]
 
     move_data = []
     for num, move in enumerate(chess_game.mainline_moves()):
