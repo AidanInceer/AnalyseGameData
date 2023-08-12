@@ -1,5 +1,3 @@
-import base64
-import json
 from io import StringIO
 
 import chess
@@ -7,7 +5,7 @@ import chess.engine
 import chess.pgn
 import pandas as pd
 from flask import Flask, request
-from google.cloud import bigquery, storage
+from google.cloud import bigquery
 
 from src.move import (
     assign_move_type,
