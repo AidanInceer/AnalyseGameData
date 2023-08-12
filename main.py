@@ -32,7 +32,7 @@ def index():
         print(f"error: {msg}")
         return f"Bad Request: {msg}", 400
 
-    pubsub_data = handle_request(request=pubsub_message)
+    pubsub_data = handle_request(pubsub_message=pubsub_message)
 
     for k, v in pubsub_data.items():
         print(f"{k}: {v}")
