@@ -23,7 +23,18 @@ app = Flask(__name__)
 
 @app.route("/", methods=["POST"])
 def index():
-    pubsub_data = handle_request(request=request)
+    pubsub_message = request.get_json()
+    if not pubsub_message:
+        msg = "no Pub/Sub message received"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
+
+    if not isinstance(pubsub_message, dict) or "message" not in pubsub_message:
+        msg = "invalid Pub/Sub message format"
+        print(f"error: {msg}")
+        return f"Bad Request: {msg}", 400
+
+    pubsub_data = handle_request(request=pubsub_message)
 
     for k, v in pubsub_data.items():
         print(f"{k}: {v}")
