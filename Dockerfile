@@ -1,6 +1,8 @@
 # Use the official Python 3.9 alpine image as the base image
 FROM python:3.9-slim
 
+USER root
+
 ENV PYTHONUNBUFFERED True
 
 # Copy the requirements.txt file into the container
@@ -11,6 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV APP_HOME /app
 WORKDIR $APP_HOME
 COPY . ./
+
+RUN chmod +x ./lib/stk15_lin/stockfish-ubuntu-20.04-x86-64
 
 
 # Run the main.py file when the container starts
