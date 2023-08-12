@@ -43,7 +43,7 @@ def index():
     chess_game = chess.pgn.read_game(game_pgn)
     board = chess_game.board()
 
-    print(path=os.getcwd())
+    print(os.getcwd())
 
     engine = chess.engine.SimpleEngine.popen_uci(
         r"./lib/stk15_lin/stockfish-ubuntu-20.04-x86-64"
