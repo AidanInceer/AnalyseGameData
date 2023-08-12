@@ -14,28 +14,31 @@ from src.move import (
     mainline_move,
     move_accuracy,
 )
-from src.utils.handlers import handle_request
 
 app = Flask(__name__)
 
 
 @app.route("/", methods=["POST"])
 def index():
-    pubsub_message = request.get_json()
-    if not pubsub_message:
+    envelope = request.get_json()
+    if not envelope:
         msg = "no Pub/Sub message received"
         print(f"error: {msg}")
         return f"Bad Request: {msg}", 400
 
-    if not isinstance(pubsub_message, dict) or "message" not in pubsub_message:
+    if not isinstance(envelope, dict) or "message" not in envelope:
         msg = "invalid Pub/Sub message format"
         print(f"error: {msg}")
         return f"Bad Request: {msg}", 400
 
-    pubsub_data = handle_request(pubsub_message=pubsub_message)
+    pubsub_message = envelope["message"]
+    data = pubsub_message["data"]
 
-    for k, v in pubsub_data.items():
-        print(f"{k}: {v}")
+    print(type(pubsub_message))
+    print(f"{pubsub_message}")
+
+    print(type(data))
+    print(f"{data}")
 
     return ("", 204)
 
