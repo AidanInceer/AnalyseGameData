@@ -7,7 +7,6 @@ import chess.engine
 import chess.pgn
 import pandas as pd
 from flask import Flask, request
-# from google.cloud import bigquery
 
 from src.move import (
     assign_move_type,
@@ -16,6 +15,9 @@ from src.move import (
     mainline_move,
     move_accuracy,
 )
+
+# from google.cloud import bigquery
+
 
 app = Flask(__name__)
 
@@ -76,9 +78,7 @@ def index():
 
     return ("", 204)
 
-
     # data = {"pgn": "A"}
-    
 
     # bq_client = bigquery.Client()
     # job_config = bigquery.LoadJobConfig()
