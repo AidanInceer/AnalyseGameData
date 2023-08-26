@@ -43,8 +43,6 @@ def index():
     chess_game = chess.pgn.read_game(game_pgn)
     board = chess_game.board()
 
-    print()
-
     engine = chess.engine.SimpleEngine.popen_uci(
         r"./lib/stk15_lin/stockfish-ubuntu-20.04-x86-64"
     )
@@ -94,7 +92,7 @@ def index():
     table = bq_client.get_table("united-axle-390115.chess_data.test_table_3")
     print(
         f"Loaded {table.num_rows} rows and {len(table.schema)}"
-        "columns to 'united-axle-390115.chess_data.test_table_3'"
+        " columns to 'united-axle-390115.chess_data.test_table_3'"
     )
 
     return ("", 204)
