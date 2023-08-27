@@ -91,7 +91,7 @@ def index():
 
     table = bq_client.get_table("united-axle-390115.CHESS_DATA.CHESS_MOVE_DATA")
     print(
-        f"Loaded {table.num_rows} rows to 'CHESS_DATA.CHESS_MOVE_DATA'"
+        f"Loaded {len(df)} rows to 'CHESS_DATA.CHESS_MOVE_DATA'"
     )
 
     return ("", 204)
