@@ -88,8 +88,6 @@ def index():
         df, "united-axle-390115.CHESS_DATA.CHESS_MOVE_DATA", job_config=job_config
     )
     job.result()
-
-    table = bq_client.get_table("united-axle-390115.CHESS_DATA.CHESS_MOVE_DATA")
     print(
         f"Loaded {len(df)} rows to 'CHESS_DATA.CHESS_MOVE_DATA'"
     )
