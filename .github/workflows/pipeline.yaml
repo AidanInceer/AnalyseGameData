@@ -7,7 +7,7 @@ env:
   REPOSITORY: betterchess
   SERVICE: analyse-chess-game
   REGION: europe-west2
-  IMAGE_ID: europe-west2 -docker.pkg.dev/united-axle-390115/betterchess/analyse-chess-game:${{ github.sha }}
+  IMAGE_ID: europe-west2-docker.pkg.dev/united-axle-390115/betterchess/analyse-chess-game:${{ github.sha }}
   
 
 on:
