@@ -7,7 +7,7 @@ env:
   REPOSITORY: betterchess
   SERVICE: analyse-chess-game
   REGION: europe-west2
-  IMAGE: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+  
 
 on:
   push:
@@ -76,8 +76,10 @@ jobs:
         docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}" ./
         docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}"
 
-    - name: Set Image Name
-      run: sed 's/<IMAGE_NAME>/${{ env.IMAGE }}/' geekfile.txt
+    - name: Set Image Name In Metadata File
+      run: sed 's/<IMAGE_NAME>/$IMAGE/' geekfile.txt
+      env:
+        IMAGE: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
 
     - name: Deploy to Cloud Run
       id: deploy
@@ -85,5 +87,5 @@ jobs:
       with:
         service: ${{ env.SERVICE }}
         region: ${{ env.REGION }}
-        image: ${{ env.IMAGE }}
+        image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
         metadata: metadata.yaml
