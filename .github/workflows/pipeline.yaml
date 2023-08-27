@@ -79,7 +79,7 @@ jobs:
         docker push "${{ env.IMAGE_ID }}"
 
     - name: Set Image Name In Metadata File
-      run: sed -i 's/IMAGE_NAME/${{ env.IMAGE_ID }}/g' metadata.yaml
+      run: sed -i "s/IMAGE_NAME/${{ env.IMAGE_ID }}/g" metadata.yaml
 
     - name: Deploy to Cloud Run
       id: deploy
