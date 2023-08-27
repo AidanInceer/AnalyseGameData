@@ -5,13 +5,19 @@ metadata:
 spec:
   template:
     metadata:
+      labels:
+        client.knative.dev/nonce: f78201f5-fbf7-426e-8a8f-011b80ea44ef
+        run.googleapis.com/startupProbeType: Default
       annotations:
+        run.googleapis.com/client-name: cloud-console
         run.googleapis.com/execution-environment: gen2
         autoscaling.knative.dev/maxScale: '25'
     spec:
+      containerConcurrency: 1
       timeoutSeconds: 900
+      serviceAccountName: 561310818303-compute@developer.gserviceaccount.com
       containers:
-      - image:
+      - image: <IMAGE_NAME>
         resources:
           limits:
             cpu: 4000m
