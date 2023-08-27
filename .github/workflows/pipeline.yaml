@@ -89,4 +89,5 @@ jobs:
         service: ${{ env.SERVICE }}
         region: ${{ env.REGION }}
         image: ${{ env.IMAGE_ID }}
+        allow-unauthenticated: true
         metadata: metadata.yaml
