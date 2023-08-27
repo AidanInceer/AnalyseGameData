@@ -43,8 +43,6 @@ def index():
     chess_game = chess.pgn.read_game(game_pgn)
     board = chess_game.board()
 
-    print()
-
     engine = chess.engine.SimpleEngine.popen_uci(
         r"./lib/stk15_lin/stockfish-ubuntu-20.04-x86-64"
     )
@@ -77,24 +75,23 @@ def index():
         move_data.append(game_dict)
 
     df = pd.DataFrame(move_data)
-
     end_time = datetime.now()
     runtime = end_time - start_time
-    print(f"Analysis successful - runtime = [{runtime}] ")
+    print(f"Analysis successful: runtime=[{runtime}]")
 
     # Upload to BQ
     bq_client = bigquery.Client()
     job_config = bigquery.LoadJobConfig()
+    job_config.write_disposition = 'WRITE_APPEND'
 
     job = bq_client.load_table_from_dataframe(
-        df, "united-axle-390115.chess_data.test_table_3", job_config=job_config
+        df, "united-axle-390115.CHESS_DATA.CHESS_MOVE_DATA", job_config=job_config
     )
     job.result()
 
-    table = bq_client.get_table("united-axle-390115.chess_data.test_table_3")
+    table = bq_client.get_table("united-axle-390115.CHESS_DATA.CHESS_MOVE_DATA")
     print(
-        f"Loaded {table.num_rows} rows and {len(table.schema)}"
-        "columns to 'united-axle-390115.chess_data.test_table_3'"
+        f"Loaded {table.num_rows} rows to 'CHESS_DATA.CHESS_MOVE_DATA'"
     )
 
     return ("", 204)
