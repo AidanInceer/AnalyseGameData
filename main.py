@@ -82,14 +82,12 @@ def index():
     # Upload to BQ
     bq_client = bigquery.Client()
     job_config = bigquery.LoadJobConfig()
-    job_config.write_disposition = 'WRITE_APPEND'
+    job_config.write_disposition = "WRITE_APPEND"
 
     job = bq_client.load_table_from_dataframe(
         df, "united-axle-390115.CHESS_DATA.CHESS_MOVE_DATA", job_config=job_config
     )
     job.result()
-    print(
-        f"Loaded {len(df)} rows to 'CHESS_DATA.CHESS_MOVE_DATA'"
-    )
+    print(f"Loaded {len(df.index)} rows to 'CHESS_DATA.CHESS_MOVE_DATA'")
 
     return ("", 204)
