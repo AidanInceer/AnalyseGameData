@@ -53,6 +53,9 @@ jobs:
       contents: read
       id-token: write
 
+    env:
+      IMAGE_ID: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+
     steps:
     - uses: 'actions/checkout@v3'
 
@@ -73,13 +76,11 @@ jobs:
 
     - name: Build and Push Container
       run: |-
-        docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}" ./
-        docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}"
+        docker build -t "$IMAGE_ID" ./
+        docker push "$IMAGE_ID"
 
     - name: Set Image Name In Metadata File
-      run: sed 's/<IMAGE_NAME>/$IMAGE/' geekfile.txt
-      env:
-        IMAGE: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+      run: sed 's/<IMAGE_NAME>/$IMAGE_ID/' geekfile.txt
 
     - name: Deploy to Cloud Run
       id: deploy
@@ -87,5 +88,5 @@ jobs:
       with:
         service: ${{ env.SERVICE }}
         region: ${{ env.REGION }}
-        image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE }}:${{ github.sha }}
+        image: $IMAGE_ID
         metadata: metadata.yaml
